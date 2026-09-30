@@ -5,6 +5,15 @@ CREATE TABLE IF NOT EXISTS events (
     end_time TIMESTAMP
 );
 
+CREATE TABLE IF NOT EXISTS users (
+    id SERIAL PRIMARY KEY,
+    username VARCHAR(100) UNIQUE NOT NULL,
+    password_hash VARCHAR(255) NOT NULL,
+    role VARCHAR(20) NOT NULL DEFAULT 'player'
+        CHECK (role IN ('admin', 'player')),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 CREATE TABLE IF NOT EXISTS challenges (
     id SERIAL PRIMARY KEY,
     event_id INTEGER REFERENCES events(id) ON DELETE CASCADE,
@@ -17,12 +26,14 @@ CREATE TABLE IF NOT EXISTS challenges (
 
 CREATE TABLE IF NOT EXISTS submissions (
     id SERIAL PRIMARY KEY,
-    user_id INTEGER,
+    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
     challenge_id INTEGER REFERENCES challenges(id) ON DELETE CASCADE,
     submitted_flag VARCHAR(255) NOT NULL,
-    submitted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    submitted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(user_id, challenge_id)
 );
 
+-- Demo event
 INSERT INTO events (name, start_time, end_time)
 SELECT
     'Demo CTF Event',
@@ -32,8 +43,23 @@ WHERE NOT EXISTS (
     SELECT 1 FROM events WHERE name = 'Demo CTF Event'
 );
 
+-- Demo users
+-- Passwords will be configured through the application authentication layer.
+INSERT INTO users (username, password_hash, role)
+SELECT 'admin', 'PLACEHOLDER_ADMIN_HASH', 'admin'
+WHERE NOT EXISTS (
+    SELECT 1 FROM users WHERE username = 'admin'
+);
+
+INSERT INTO users (username, password_hash, role)
+SELECT 'player', 'PLACEHOLDER_PLAYER_HASH', 'player'
+WHERE NOT EXISTS (
+    SELECT 1 FROM users WHERE username = 'player'
+);
+
+-- Demo challenges
 INSERT INTO challenges
-    (event_id, title, description, category, points, flag)
+(event_id, title, description, category, points, flag)
 SELECT
     e.id,
     'Welcome Challenge',
@@ -48,7 +74,7 @@ AND NOT EXISTS (
 );
 
 INSERT INTO challenges
-    (event_id, title, description, category, points, flag)
+(event_id, title, description, category, points, flag)
 SELECT
     e.id,
     'Caesar''s Secret',
@@ -63,7 +89,7 @@ AND NOT EXISTS (
 );
 
 INSERT INTO challenges
-    (event_id, title, description, category, points, flag)
+(event_id, title, description, category, points, flag)
 SELECT
     e.id,
     'Lost Evidence',
@@ -78,7 +104,7 @@ AND NOT EXISTS (
 );
 
 INSERT INTO challenges
-    (event_id, title, description, category, points, flag)
+(event_id, title, description, category, points, flag)
 SELECT
     e.id,
     'Hidden Path',
@@ -93,7 +119,7 @@ AND NOT EXISTS (
 );
 
 INSERT INTO challenges
-    (event_id, title, description, category, points, flag)
+(event_id, title, description, category, points, flag)
 SELECT
     e.id,
     'Final Challenge',
