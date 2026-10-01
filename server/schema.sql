@@ -21,8 +21,12 @@ CREATE TABLE IF NOT EXISTS challenges (
     description TEXT NOT NULL,
     category VARCHAR(50) NOT NULL,
     points INTEGER NOT NULL,
-    flag VARCHAR(255) NOT NULL
+    flag VARCHAR(255) NOT NULL,
+    attachment_path TEXT
 );
+
+ALTER TABLE challenges
+ADD COLUMN IF NOT EXISTS attachment_path TEXT;
 
 CREATE TABLE IF NOT EXISTS submissions (
     id SERIAL PRIMARY KEY,
