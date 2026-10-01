@@ -8,73 +8,44 @@ CTF-Builder is a web platform for creating and hosting Capture The Flag cybersec
 - `client-participant` - Player interface
 - `server` - Node.js/Express backend
 - PostgreSQL - Main relational database
-- Redis - Leaderboard and rate limiting
+- Redis - Optional leaderboard/rate-limit acceleration
 - Socket.io - Real-time scoreboard updates
-
-## Features
-
-### Organizer
-
-- Admin authentication
-- Create challenges
-- Delete challenges
-- Challenge categories
-- Challenge points
-- Flag management
-
-### Player
-
-- Player authentication
-- View available challenges
-- Submit flags
-- Duplicate submission protection
-- Score tracking
-- Leaderboard
-
-### Security
-
-- JWT authentication
-- Role-based admin access
-- PostgreSQL parameterized queries
-- Submission rate limiting support
-- Duplicate challenge protection
 
 ## Demo Credentials
 
-### Admin
+Admin:
+- Username: `admin`
+- Password: `Admin@123`
 
-Username:
-`admin`
+Player:
+- Username: `player`
+- Password: `Player@123`
 
-Password:
-`Admin@123`
-
-### Player
-
-Username:
-`player`
-
-Password:
-`Player@123`
-
-## Database
-
-PostgreSQL database:
-
-`ctf_builder`
-
-Tables:
-
-- `events`
-- `users`
-- `challenges`
-- `submissions`
-
-## Running the Project
+## Local Development
 
 ### Backend
-
 ```bash
 cd server
 npm install
 node index.js
+```
+
+### Admin
+```bash
+cd client-admin
+npm install
+npm run dev
+```
+
+### Participant
+```bash
+cd client-participant
+npm install
+npm run dev
+```
+
+For deployed frontends, set `VITE_API_URL` to the public backend URL.
+
+## Deployment
+
+The backend is suitable for a Node.js Web Service. The two React applications can be deployed as separate static sites. Configure the backend PostgreSQL and JWT environment variables in the hosting provider and set `VITE_API_URL` on both frontends.

@@ -25,7 +25,8 @@ const io = new Server(server, {
   },
 });
 
-const PORT = 5000;
+const PORT = Number(process.env.PORT || 5000);
+const BACKEND_URL = (process.env.BACKEND_URL || "").replace(/\/$/, "");
 
 app.use(cors());
 app.use(express.json());
@@ -177,7 +178,7 @@ app.get("/api/challenges", async (req, res) => {
     const challenges = result.rows.map((challenge) => ({
       ...challenge,
       attachment_url: challenge.attachment_path
-        ? `http://localhost:${PORT}/${challenge.attachment_path}`
+        ? `${BACKEND_URL}/${challenge.attachment_path}`
         : null,
     }));
 
@@ -252,7 +253,7 @@ app.post(
       res.status(201).json({
         ...challenge,
         attachment_url: challenge.attachment_path
-          ? `http://localhost:${PORT}/${challenge.attachment_path}`
+          ? `${BACKEND_URL}/${challenge.attachment_path}`
           : null,
       });
     } catch (error) {
@@ -370,7 +371,7 @@ app.put(
       res.json({
         ...challenge,
         attachment_url: challenge.attachment_path
-          ? `http://localhost:${PORT}/${challenge.attachment_path}`
+          ? `${BACKEND_URL}/${challenge.attachment_path}`
           : null,
       });
     } catch (error) {
@@ -577,6 +578,10 @@ app.get("/api/leaderboard", authenticateToken, async (req, res) => {
 /* Start server */
 async function startServer() {
   try {
+    const schemaPath = path.join(__dirname, "schema.sql");
+    const schema = fs.readFileSync(schemaPath, "utf8");
+    await pool.query(schema);
+
     await seedDemoUsers();
 
     server.listen(PORT, () => {
